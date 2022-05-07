@@ -27,6 +27,7 @@ def read_tablet(rm_inputs, *, orientation, monitor_num, region, threshold, mode)
         mode (str): mapping mode
     """
 
+    import keyboard
     from pynput.mouse import Button, Controller
 
     mouse = Controller()
@@ -56,9 +57,29 @@ def read_tablet(rm_inputs, *, orientation, monitor_num, region, threshold, mode)
         # handle draw
         if codes[e_type][e_code] == 'BTN_TOUCH':
             if e_value == 1:
-                mouse.press(Button.left)
+                log.debug('PRESS')
+                if keyboard.is_pressed('ctrl'):
+                    keyboard.block_key('ctrl')
+                    keyboard.release('ctrl')
+                    mouse.press(Button.right)
+                elif keyboard.is_pressed('shift'):
+                    keyboard.block_key('shift')
+                    keyboard.release('shift')
+                    mouse.press(Button.middle)
+                else:
+                    mouse.press(Button.left)
             else:
-                mouse.release(Button.left)
+                log.debug('RELEASE')
+                if keyboard.is_pressed('ctrl'):
+                    keyboard.block_key('ctrl')
+                    keyboard.release('ctrl')
+                    mouse.release(Button.right)
+                elif keyboard.is_pressed('shift'):
+                    keyboard.block_key('shift')
+                    keyboard.release('shift')
+                    mouse.release(Button.middle)
+                else:
+                    mouse.release(Button.left)
 
         if codes[e_type][e_code] == 'SYN_REPORT':
             mapped_x, mapped_y = remap(
